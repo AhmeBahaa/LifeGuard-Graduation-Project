@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Health Monitoring | Graduation Project</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Lora', serif; }
+        .nav-link { font-family: 'Poppins', sans-serif; transition: 0.3s; position: relative; }
+        
+        .nav-link.active { color: #E22C2C !important; font-weight: 700; }
+        .nav-link.active::after {
+            content: ''; position: absolute; bottom: -5px; left: 0;
+            width: 100%; height: 2px; background: #E22C2C;
+        }
+
+        .hero-gradient { background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%); }
+        .dark .hero-gradient { background: linear-gradient(135deg, #111827 0%, #1f2937 100%); }
+
+        @keyframes pulse-red {
+            0% { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(2.2); opacity: 0; }
+        }
+        .animate-pulse-red { animation: pulse-red 2.5s cubic-bezier(0, 0, 0.2, 1) infinite; }
+
+        @keyframes voice-distress {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            50% { transform: scale(1.5); opacity: 0.3; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+        .animate-voice-distress { animation: voice-distress 3s cubic-bezier(0, 0, 0.2, 1) infinite; }
+
+        .video-overlay:hover .play-btn {
+            transform: scale(1.1);
+            background-color: #E22C2C;
+            color: white;
+        }
+
+        .code-scroll::-webkit-scrollbar { height: 8px; width: 8px; }
+        .code-scroll::-webkit-scrollbar-track { background: #1f2937; border-radius: 4px; }
+        .code-scroll::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow { animation: spin-slow 15s linear infinite; }
+        .animate-spin-slow-reverse { animation: spin-slow 10s linear infinite reverse; }
+        
+        .mobile-glow { box-shadow: 0 0 40px rgba(226, 44, 44, 0.15); }
+        .dark .mobile-glow { box-shadow: 0 0 40px rgba(226, 44, 44, 0.3); }
+
+        #mobile-menu {
+            transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        #mobile-menu.open {
+            max-height: 500px;
+            opacity: 1;
+        }
+    </style>
+
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    </script>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 overflow-x-hidden relative transition-colors duration-300">
+
+    <nav class="fixed top-0 w-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-md z-50 border-b border-gray-100 dark:border-gray-800 transition-colors duration-300">
+        <div class="px-6 py-4 flex justify-between items-center max-w-7xl mx-auto">
+            <div class="flex items-center space-x-3 z-50">
+                <i class="fa-solid fa-heart-pulse text-[#E22C2C] text-2xl"></i>
+                <span class="font-bold text-xl font-['Poppins'] tracking-tight dark:text-white">HealthMonitor</span>
+            </div>
+            
+            <div class="hidden lg:flex items-center space-x-8">
+                <a href="#home" class="nav-link text-gray-500 dark:text-gray-400 hover:text-[#E22C2C] dark:hover:text-[#E22C2C] text-sm uppercase active"><i class="fa-solid fa-house mr-1"></i> Home</a>
+                <a href="#product" class="nav-link text-gray-500 dark:text-gray-400 hover:text-[#E22C2C] dark:hover:text-[#E22C2C] text-sm uppercase"><i class="fa-solid fa-box-archive mr-1"></i> Product</a>
+                <a href="#debug" class="nav-link text-gray-500 dark:text-gray-400 hover:text-[#E22C2C] dark:hover:text-[#E22C2C] text-sm uppercase"><i class="fa-solid fa-bug mr-1"></i> Debug</a>
+
+                <div class="relative group">
+                    <a href="#sensors" class="nav-link flex items-center text-gray-500 dark:text-gray-400 hover:text-[#E22C2C] dark:hover:text-[#E22C2C] text-sm uppercase cursor-pointer py-2">
+                        <i class="fa-solid fa-microchip mr-1"></i> Sensors <i class="fa-solid fa-chevron-down ml-1.5 text-[10px]"></i>
+                    </a>
+                    <div class="absolute left-0 mt-0 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-left scale-95 group-hover:scale-100 z-50">
+                        <div class="py-2">
+                            <a href="#esp32" class="block px-4 py-2.5 text-sm font-['Poppins'] text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-gray-700 hover:text-[#E22C2C] dark:hover:text-[#E22C2C] transition-colors"><i class="fa-solid fa-microchip mr-2 w-4 text-center"></i>ESP32</a>
+                            <a href="#max30105" class="block px-4 py-2.5 text-sm font-['Poppins'] text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-gray-700 hover:text-[#E22C2C] dark:hover:text-[#E22C2C] transition-colors"><i class="fa-solid fa-heart-pulse mr-2 w-4 text-center"></i>MAX30105</a>
+                            <a href="#mpu6050" class="block px-4 py-2.5 text-sm font-['Poppins'] text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-gray-700 hover:text-[#E22C2C] dark:hover:text-[#E22C2C] transition-colors"><i class="fa-solid fa-person-falling mr-2 w-4 text-center"></i>MPU6050</a>
+                            <a href="#mlx90614" class="block px-4 py-2.5 text-sm font-['Poppins'] text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-gray-700 hover:text-[#E22C2C] dark:hover:text-[#E22C2C] transition-colors"><i class="fa-solid fa-temperature-half mr-2 w-4 text-center"></i>MLX90614</a>
+                            <a href="#ad8232" class="block px-4 py-2.5 text-sm font-['Poppins'] text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-gray-700 hover:text-[#E22C2C] dark:hover:text-[#E22C2C] transition-colors"><i class="fa-solid fa-wave-square mr-2 w-4 text-center"></i>AD8232</a>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="#future" class="nav-link text-gray-500 dark:text-gray-400 hover:text-[#E22C2C] dark:hover:text-[#E22C2C] text-sm uppercase"><i class="fa-solid fa-rocket mr-1"></i> Future</a>
+                
+                <button type="button" class="theme-toggle-btn text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full text-sm p-2 transition-colors">
+                    <i class="fa-solid fa-moon text-lg hidden dark-icon"></i>
+                    <i class="fa-solid fa-sun text-lg hidden light-icon"></i>
+                </button>
+            </div>
+
+            <div class="lg:hidden flex items-center space-x-4 z-50">
+                <button type="button" class="theme-toggle-btn text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full text-sm p-2 transition-colors">
+                    <i class="fa-solid fa-moon text-lg hidden dark-icon"></i>
+                    <i class="fa-solid fa-sun text-lg hidden light-icon"></i>
+                </button>
+                <button id="mobile-menu-btn" class="text-2xl text-gray-800 dark:text-gray-200 focus:outline-none">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="lg:hidden bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 absolute w-full left-0 z-40 shadow-lg">
+            <div class="flex flex-col px-6 py-4 space-y-4 font-['Poppins']">
+                <a href="#home" class="mobile-link text-gray-600 dark:text-gray-300 hover:text-[#E22C2C]"><i class="fa-solid fa-house mr-2 w-5"></i> Home</a>
+                <a href="#product" class="mobile-link text-gray-600 dark:text-gray-300 hover:text-[#E22C2C]"><i class="fa-solid fa-box-archive mr-2 w-5"></i> Product</a>
+                <a href="#debug" class="mobile-link text-gray-600 dark:text-gray-300 hover:text-[#E22C2C]"><i class="fa-solid fa-bug mr-2 w-5"></i> Debug</a>
+                <a href="#sensors" class="mobile-link text-gray-600 dark:text-gray-300 hover:text-[#E22C2C]"><i class="fa-solid fa-microchip mr-2 w-5"></i> Sensors</a>
+                <a href="#future" class="mobile-link text-gray-600 dark:text-gray-300 hover:text-[#E22C2C]"><i class="fa-solid fa-rocket mr-2 w-5"></i> Future</a>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="hero-gradient min-h-screen lg:min-h-[90vh] flex items-center pt-28 lg:pt-24 px-6 lg:px-8 overflow-hidden">
+        <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+            <div class="z-10 text-center lg:text-left mt-10 lg:mt-0">
+                <h1 class="text-5xl lg:text-[85px] font-bold text-[#707070] dark:text-gray-200 font-['Poppins'] leading-tight mb-4 transition-colors">
+                    Smart Health <br><span class="text-[#E22C2C]">Monitoring</span>
+                </h1>
+                
+                <div class="border-l-4 border-[#E22C2C] pl-6 py-2 my-8 mx-auto lg:mx-0 max-w-md lg:max-w-none text-left">
+                    <p class="text-xl lg:text-2xl italic font-['Lora'] text-gray-500 dark:text-gray-400 leading-relaxed transition-colors">
+                        Total Care, Zero Worry: Your Patient is Safe in Our Hands.
+                    </p>
+                </div>
+
+                <a href="#product" class="inline-block bg-[#E22C2C] text-white px-10 py-4 rounded-full font-bold shadow-xl hover:bg-black dark:hover:bg-gray-800 transition-all font-['Poppins'] cursor-pointer">
+                    Explore Solution
+                </a>
+            </div>
+
+            <div class="relative flex justify-center items-center mt-10 lg:mt-0 h-[300px] lg:h-auto">
+                <div class="absolute -z-10 w-[300px] lg:w-[500px] h-[300px] lg:h-[500px] bg-red-50 dark:bg-red-900/20 rounded-full blur-[100px] opacity-70 transition-colors"></div>
+                <span class="absolute inline-flex rounded-full bg-[#E22C2C] opacity-70 animate-pulse-red w-[150px] lg:w-[250px] h-[150px] lg:h-[250px]"></span>
+                <span class="absolute inline-flex rounded-full bg-[#E22C2C] opacity-50 animate-pulse-red w-[150px] lg:w-[250px] h-[150px] lg:h-[250px]" style="animation-delay: 0.8s; animation-duration: 3s;"></span>
+                <div class="relative transform scale-110 lg:scale-150 transition-transform duration-700">
+                    <img src="images/home1.png" alt="Main Heart System" class="w-64 lg:w-full h-auto drop-shadow-[0_35px_35px_rgba(226,44,44,0.15)] dark:drop-shadow-[0_35px_35px_rgba(226,44,44,0.3)]">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="product" class="py-20 lg:py-32 px-6 bg-white dark:bg-gray-900 transition-colors duration-300">
+        <div class="max-w-6xl mx-auto text-center">
+            
+            <h2 class="text-4xl lg:text-5xl font-bold mb-6 text-[#707070] dark:text-gray-200 font-['Poppins'] transition-colors">Our Mission</h2>
+            <p class="text-lg lg:text-2xl leading-relaxed text-gray-600 dark:text-gray-400 mb-12 lg:mb-16 transition-colors max-w-4xl mx-auto">
+                In the realm of healthcare, we bridge the gap for those who cannot articulate their pain, acting as a digital voice and a 24/7 guardian.
+            </p>
+
+            <div class="grid md:grid-cols-3 gap-6 lg:gap-8 mb-20 lg:mb-24 max-w-4xl mx-auto">
+                <div class="p-6 lg:p-8 bg-gray-50 dark:bg-gray-800 rounded-2xl hover:shadow-xl transition-all border border-gray-100 dark:border-gray-700">
+                    <i class="fa-solid fa-bolt text-[#E22C2C] text-3xl mb-4"></i>
+                    <h3 class="font-bold mb-2 font-['Poppins'] dark:text-white">Real-time</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Instant vitals processing via ESP32.</p>
+                </div>
+                <div class="p-6 lg:p-8 bg-gray-50 dark:bg-gray-800 rounded-2xl hover:shadow-xl transition-all border border-gray-100 dark:border-gray-700">
+                    <i class="fa-solid fa-shield-heart text-[#E22C2C] text-3xl mb-4"></i>
+                    <h3 class="font-bold mb-2 font-['Poppins'] dark:text-white">Secure</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Encrypted health data for patient privacy.</p>
+                </div>
+                <div class="p-6 lg:p-8 bg-gray-50 dark:bg-gray-800 rounded-2xl hover:shadow-xl transition-all border border-gray-100 dark:border-gray-700">
+                    <i class="fa-solid fa-mobile-screen-button text-[#E22C2C] text-3xl mb-4"></i>
+                    <h3 class="font-bold mb-2 font-['Poppins'] dark:text-white">Accessible</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Dedicated mobile interface for caregivers.</p>
+                </div>
+            </div>
+
+            <h2 class="text-4xl lg:text-5xl font-bold mb-6 text-[#707070] dark:text-gray-200 font-['Poppins'] transition-colors">Product Overview</h2>
+            <p class="text-lg lg:text-2xl leading-relaxed text-gray-600 dark:text-gray-400 mb-12 lg:mb-16 transition-colors max-w-4xl mx-auto">
+                This innovative wearable device is designed to provide continuous, real-time health monitoring for elderly individuals and patients with limited mobility. By integrating advanced IoT technology with precision medical sensors, our system ensures that vital signs are constantly tracked, providing peace of mind for both patients and caregivers.
+            </p>
+
+            <div class="max-w-4xl mx-auto mb-20 lg:mb-32 relative group cursor-pointer video-overlay rounded-3xl" onclick="playFullscreenVideo()">
+                <div class="absolute -inset-1 bg-gradient-to-r from-[#E22C2C] to-red-400 rounded-3xl blur opacity-25 group-hover:opacity-60 transition duration-500"></div>
+                <div class="relative bg-white dark:bg-gray-800 rounded-3xl p-2 shadow-2xl border border-gray-100 dark:border-gray-700">
+                    <video id="projectVideo" class="w-full rounded-2xl object-cover h-[250px] sm:h-[350px] md:h-[500px]" controls preload="metadata">
+                        <source src="images\v3.mp4#t=10" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div class="play-btn w-16 h-16 lg:w-20 lg:h-20 bg-white/90 dark:bg-gray-800/90 rounded-full flex items-center justify-center text-[#E22C2C] shadow-[0_10px_25px_rgba(226,44,44,0.3)] backdrop-blur-sm transition-all duration-300">
+                            <i class="fa-solid fa-play text-2xl lg:text-3xl ml-1 lg:ml-2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="text-4xl lg:text-5xl font-bold mb-8 lg:mb-12 text-[#707070] dark:text-gray-200 font-['Poppins'] transition-colors">Key Features</h2>
+            <div class="grid md:grid-cols-2 gap-6 lg:gap-8 text-left mb-20 lg:mb-32 max-w-5xl mx-auto">
+                <div class="group bg-white dark:bg-gray-800 p-6 lg:p-8 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-2 h-full bg-[#E22C2C]"></div>
+                    <div class="flex items-start space-x-4 lg:space-x-5">
+                        <div class="bg-red-50 dark:bg-red-900/30 p-3 lg:p-4 rounded-2xl group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300 shrink-0">
+                            <i class="fa-solid fa-heart-pulse text-[#E22C2C] text-2xl lg:text-3xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg lg:text-xl font-bold mb-2 font-['Poppins'] text-gray-800 dark:text-gray-100">Real-time Vital Signs Tracking</h3>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Monitors Heart Rate (BPM) and Blood Oxygen Saturation (SpO2) levels using the MAX30105 high-sensitivity pulse oximeter.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="group bg-white dark:bg-gray-800 p-6 lg:p-8 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-2 h-full bg-orange-400"></div>
+                    <div class="flex items-start space-x-4 lg:space-x-5">
+                        <div class="bg-orange-50 dark:bg-orange-900/30 p-3 lg:p-4 rounded-2xl group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300 shrink-0">
+                            <i class="fa-solid fa-temperature-three-quarters text-orange-400 text-2xl lg:text-3xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg lg:text-xl font-bold mb-2 font-['Poppins'] text-gray-800 dark:text-gray-100">Precision Temperature Monitoring</h3>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Utilizes a calibrated thermistor and the Steinhart-Hart equation to provide accurate body temperature readings.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="group bg-white dark:bg-gray-800 p-6 lg:p-8 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-2 h-full bg-blue-500"></div>
+                    <div class="flex items-start space-x-4 lg:space-x-5">
+                        <div class="bg-blue-50 dark:bg-blue-900/30 p-3 lg:p-4 rounded-2xl group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300 shrink-0">
+                            <i class="fa-solid fa-person-falling text-blue-500 text-2xl lg:text-3xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg lg:text-xl font-bold mb-2 font-['Poppins'] text-gray-800 dark:text-gray-100">Intelligent Fall Detection</h3>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Powered by the MPU6050 accelerometer, the device can instantly detect falls or abnormal shaking, triggering alerts.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="group bg-white dark:bg-gray-800 p-6 lg:p-8 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-2 h-full bg-green-500"></div>
+                    <div class="flex items-start space-x-4 lg:space-x-5">
+                        <div class="bg-green-50 dark:bg-green-900/30 p-3 lg:p-4 rounded-2xl group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300 shrink-0">
+                            <i class="fa-solid fa-wifi text-green-500 text-2xl lg:text-3xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg lg:text-xl font-bold mb-2 font-['Poppins'] text-gray-800 dark:text-gray-100">Wireless Accessibility (IoT)</h3>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Features a built-in web server that allows caregivers to view the patient’s health status from any connected device.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="text-4xl lg:text-5xl font-bold mb-8 lg:mb-16 text-[#707070] dark:text-gray-200 font-['Poppins'] transition-colors">Technical Breakdown</h2>
+            
+            <div class="grid lg:grid-cols-3 gap-8 lg:gap-12 text-left max-w-6xl mx-auto mb-8">
+                <div class="bg-white dark:bg-gray-800 p-6 lg:p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 hover:-translate-y-2 transition-all duration-300">
+                    <div class="bg-indigo-50 dark:bg-indigo-900/30 w-14 h-14 lg:w-16 lg:h-16 rounded-2xl flex items-center justify-center mb-6 border border-indigo-100 dark:border-indigo-800/50">
+                        <i class="fa-solid fa-microchip text-indigo-500 text-xl lg:text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-3 font-['Poppins'] text-gray-800 dark:text-gray-100">A. Core Logic & Connectivity</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
+                        The system is built on the ESP32 microcontroller, utilizing its dual-core capabilities to handle sensor data processing while simultaneously hosting a Web Server. 
+                    </p>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 p-6 lg:p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 hover:-translate-y-2 transition-all duration-300">
+                    <div class="bg-rose-50 dark:bg-rose-900/30 w-14 h-14 lg:w-16 lg:h-16 rounded-2xl flex items-center justify-center mb-6 border border-rose-100 dark:border-rose-800/50">
+                        <i class="fa-solid fa-wave-square text-rose-500 text-xl lg:text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-3 font-['Poppins'] text-gray-800 dark:text-gray-100">B. Advanced Sensor Integration</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-3">
+                        <strong class="text-gray-700 dark:text-gray-300">Heart Rate & SpO2:</strong> Processes IR and Red light absorption to calculate heartbeats and oxygen levels reliably.
+                    </p>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
+                        <strong class="text-gray-700 dark:text-gray-300">Motion & Fall Detection:</strong> Calculates the Net Acceleration Vector <span class="font-mono bg-gray-50 dark:bg-gray-900 px-1 rounded">&radic;(x&sup2;+y&sup2;+z&sup2;)</span> to distinguish critical events.
+                    </p>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 p-6 lg:p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 hover:-translate-y-2 transition-all duration-300">
+                    <div class="bg-orange-50 dark:bg-orange-900/30 w-14 h-14 lg:w-16 lg:h-16 rounded-2xl flex items-center justify-center mb-6 border border-orange-100 dark:border-orange-800/50">
+                        <i class="fa-solid fa-calculator text-orange-500 text-xl lg:text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-3 font-['Poppins'] text-gray-800 dark:text-gray-100">C. Thermal Calculation</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-4">
+                        To ensure medical-grade accuracy, the temperature is calculated using the Steinhart-Hart Equation:
+                    </p>
+                    <div class="bg-gray-50 dark:bg-gray-900 p-3 lg:p-4 rounded-xl text-center font-mono text-sm text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 mb-4 overflow-x-auto shadow-inner">
+                        1/T = 1/T<sub>0</sub> + (1/B) ln(R/R<sub>0</sub>)
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-12 max-w-6xl mx-auto border-t border-gray-100 dark:border-gray-800 pt-12 transition-colors text-center">
+                <h2 class="text-3xl lg:text-5xl font-bold mb-6 text-[#707070] dark:text-gray-200 font-['Poppins'] tracking-tight transition-colors">Why This Project Matters</h2>
+                <p class="text-lg lg:text-2xl leading-relaxed text-gray-600 dark:text-gray-400 mb-0 transition-colors max-w-4xl mx-auto">
+                    This product acts as a "voice" for those who cannot express their physical distress. By automating the monitoring process, we reduce the risk of human error and ensure that help is dispatched the moment a medical anomaly or a fall occurs.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section id="debug" class="py-20 lg:py-32 px-6 bg-gray-50 dark:bg-gray-800/50 transition-colors duration-300 border-y border-gray-200 dark:border-gray-800">
+        <div class="max-w-7xl mx-auto">
+            
+            <div class="text-center mb-12 lg:mb-16">
+                <span class="text-[#E22C2C] font-bold tracking-widest uppercase text-sm mb-2 block font-['Poppins']"><i class="fa-solid fa-code mr-1"></i> Behind The Scenes</span>
+                <h2 class="text-4xl lg:text-5xl font-bold text-[#707070] dark:text-gray-200 font-['Poppins'] transition-colors">System Architecture</h2>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
+                <div class="bg-white dark:bg-gray-900 p-6 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 transition-colors flex flex-col">
+                    <h3 class="text-lg lg:text-xl font-bold mb-4 font-['Poppins'] text-gray-800 dark:text-gray-100 border-b border-gray-100 dark:border-gray-800 pb-4 shrink-0">
+                        <i class="fa-solid fa-network-wired text-[#E22C2C] mr-2"></i> Circuit Diagram
+                    </h3>
+                    <div class="w-full h-[300px] lg:h-[450px] bg-gray-100 dark:bg-gray-800 rounded-2xl overflow-hidden flex items-center justify-center border border-dashed border-gray-300 dark:border-gray-600 relative shrink-0">
+                        <img src="images/circuitdiagram.png" alt="Circuit Design" class="w-full h-full object-contain p-2 z-10 relative">
+                        <div class="absolute text-gray-400 dark:text-gray-500 text-sm font-['Poppins'] z-0 flex flex-col items-center">
+                            <i class="fa-regular fa-image text-3xl mb-2"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#1e1e1e] rounded-3xl shadow-2xl overflow-hidden border border-gray-700 flex flex-col mt-8 lg:mt-0">
+                    <div class="bg-[#2d2d2d] px-4 py-3 flex items-center justify-between border-b border-gray-800 shrink-0">
+                        <div class="flex space-x-2">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        </div>
+                        <div class="text-gray-400 text-[10px] lg:text-xs font-mono font-bold tracking-widest uppercase">
+                            main.cpp — ESP32
+                        </div>
+                        <div></div> 
+                    </div>
+                    
+                    <div class="flex-1 relative bg-[#1e1e1e] h-[300px] lg:h-auto min-h-0">
+                        <div class="absolute inset-0 p-4 lg:p-6 overflow-y-auto overflow-x-auto code-scroll text-left">
+                            <pre><code class="text-xs lg:text-[13px] font-mono leading-relaxed text-[#d4d4d4]">
+<span class="text-[#569cd6]">#include</span> &lt;<span class="text-[#ce9178]">Wire.h</span>&gt;
+<span class="text-[#569cd6]">#include</span> &lt;<span class="text-[#ce9178]">WiFi.h</span>&gt;
+<span class="text-[#569cd6]">#include</span> &lt;<span class="text-[#ce9178]">WebServer.h</span>&gt;
+<span class="text-[#569cd6]">#include</span> &lt;<span class="text-[#ce9178]">HTTPClient.h</span>&gt; 
+<span class="text-[#569cd6]">#include</span> &lt;<span class="text-[#ce9178]">Adafruit_MPU6050.h</span>&gt;
+<span class="text-[#569cd6]">#include</span> &lt;<span class="text-[#ce9178]">Adafruit_Sensor.h</span>&gt;
+<span class="text-[#569cd6]">#include</span> <span class="text-[#ce9178]">"MAX30105.h"</span>
+<span class="text-[#569cd6]">#include</span> <span class="text-[#ce9178]">"heartRate.h"</span>
+<span class="text-[#569cd6]">#include</span> &lt;<span class="text-[#ce9178]">ESPmDNS.h</span>&gt;
+
+<span class="text-[#6a9955]">// --- Configuration ---</span>
+<span class="text-[#569cd6]">const char*</span> ssid = <span class="text-[#ce9178]">"Ahmed's Galaxy A12"</span>;
+<span class="text-[#569cd6]">const char*</span> password = <span class="text-[#ce9178]">"1234567@"</span>;
+<span class="text-[#6a9955]">// mDNS names must be ASCII only, no spaces!</span>
+<span class="text-[#569cd6]">const char*</span> mdnsName = <span class="text-[#ce9178]">"patient-monitor"</span>; 
+<span class="text-[#569cd6]">const char*</span> n8n_webhook = <span class="text-[#ce9178]">"http://10.231.42.53:5678/webhook-test/sensor-data"</span>; 
+<span class="text-[#569cd6]">#define</span> THERMISTOR_PIN <span class="text-[#b5cea8]">34</span>
+<span class="text-[#569cd6]">#define</span> SERIES_RESISTOR <span class="text-[#b5cea8]">10000</span>
+<span class="text-[#569cd6]">#define</span> NOMINAL_RESISTANCE <span class="text-[#b5cea8]">10000</span>
+<span class="text-[#569cd6]">#define</span> B_COEFFICIENT <span class="text-[#b5cea8]">3950</span>
+<span class="text-[#569cd6]">#define</span> ADC_MAX <span class="text-[#b5cea8]">4095</span>
+
+<span class="text-[#6a9955]">// --- Global Objects ---</span>
+<span class="text-[#4ec9b0]">WebServer</span> server(<span class="text-[#b5cea8]">80</span>);
+<span class="text-[#4ec9b0]">Adafruit_MPU6050</span> mpu;
+<span class="text-[#4ec9b0]">MAX30105</span> particleSensor;
+
+<span class="text-[#6a9955]">// --- Vitals Variables ---</span>
+<span class="text-[#569cd6]">float</span> bodyTemp = <span class="text-[#b5cea8]">0</span>;
+<span class="text-[#4ec9b0]">String</span> motion = <span class="text-[#ce9178]">"Stable"</span>;
+<span class="text-[#569cd6]">int</span> beatAvg = <span class="text-[#b5cea8]">0</span>;
+<span class="text-[#569cd6]">int</span> approxSpO2 = <span class="text-[#b5cea8]">0</span>;
+<span class="text-[#569cd6]">long</span> lastBeat = <span class="text-[#b5cea8]">0</span>;
+<span class="text-[#569cd6]">const byte</span> RATE_SIZE = <span class="text-[#b5cea8]">4</span>;
+<span class="text-[#569cd6]">byte</span> rates[RATE_SIZE];
+<span class="text-[#569cd6]">byte</span> rateSpot = <span class="text-[#b5cea8]">0</span>;
+
+<span class="text-[#569cd6]">unsigned long</span> lastPostTime = <span class="text-[#b5cea8]">0</span>;
+<span class="text-[#569cd6]">const long</span> postInterval = <span class="text-[#b5cea8]">2000</span>; <span class="text-[#6a9955]">// Send to n8n every 2 seconds</span>
+
+<span class="text-[#6a9955]">// --- Web Page HTML ---</span>
+<span class="text-[#569cd6]">void</span> <span class="text-[#dcdcaa]">handleRoot</span>() {
+  <span class="text-[#4ec9b0]">String</span> html = <span class="text-[#ce9178]">"&lt;html&gt;&lt;head&gt;&lt;meta http-equiv='refresh' content='1'&gt;&lt;/head&gt;"</span>;
+  html += <span class="text-[#ce9178]">"&lt;body style='font-family:sans-serif; text-align:center; background:#f4f4f4;'&gt;"</span>;
+  html += <span class="text-[#ce9178]">"&lt;h1&gt;Live Patient Monitor&lt;/h1&gt;"</span>;
+  html += <span class="text-[#ce9178]">"&lt;div style='font-size:1.5em; border:2px solid #333; display:inline-block; padding:20px; background:white; border-radius:10px;'&gt;"</span>;
+  
+  <span class="text-[#6a9955]">// IP and mDNS Info</span>
+  html += <span class="text-[#ce9178]">"&lt;p&gt;&lt;b&gt;IP Address:&lt;/b&gt; "</span> + WiFi.localIP().toString() + <span class="text-[#ce9178]">"&lt;/p&gt;"</span>;
+  html += <span class="text-[#ce9178]">"&lt;p&gt;&lt;b&gt;URL:&lt;/b&gt; &lt;a href='http://"</span> + String(mdnsName) + <span class="text-[#ce9178]">".local'&gt;http://"</span> + String(mdnsName) + <span class="text-[#ce9178]">".local&lt;/a&gt;&lt;/p&gt;"</span>;
+  html += <span class="text-[#ce9178]">"&lt;hr&gt;"</span>;
+
+  html += <span class="text-[#ce9178]">"&lt;p&gt;&lt;b&gt;Movement:&lt;/b&gt; "</span> + motion + <span class="text-[#ce9178]">"&lt;/p&gt;"</span>;
+  html += <span class="text-[#ce9178]">"&lt;p&gt;&lt;b&gt;Temperature:&lt;/b&gt; "</span> + String(bodyTemp, <span class="text-[#b5cea8]">1</span>) + <span class="text-[#ce9178]">" C&lt;/p&gt;"</span>;
+  html += <span class="text-[#ce9178]">"&lt;p&gt;&lt;b&gt;Heart Rate:&lt;/b&gt; "</span> + String(beatAvg) + <span class="text-[#ce9178]">" BPM&lt;/p&gt;"</span>;
+  html += <span class="text-[#ce9178]">"&lt;p&gt;&lt;b&gt;SpO2:&lt;/b&gt; "</span> + String(approxSpO2) + <span class="text-[#ce9178]">"%&lt;/p&gt;"</span>;
+  html += <span class="text-[#ce9178]">"&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;"</span>;
+  server.send(<span class="text-[#b5cea8]">200</span>, <span class="text-[#ce9178]">"text/html"</span>, html);
+}
+
+<span class="text-[#569cd6]">void</span> <span class="text-[#dcdcaa]">setup</span>() {
+  Serial.begin(<span class="text-[#b5cea8]">115200</span>);
+  Wire.begin(<span class="text-[#b5cea8]">21</span>, <span class="text-[#b5cea8]">22</span>);
+
+  <span class="text-[#6a9955]">// Connect Wi-Fi</span>
+  WiFi.begin(ssid, password);
+  Serial.print(<span class="text-[#ce9178]">"Connecting to WiFi"</span>);
+  <span class="text-[#c586c0]">while</span> (WiFi.status() != WL_CONNECTED) { 
+    delay(<span class="text-[#b5cea8]">500</span>); 
+    Serial.print(<span class="text-[#ce9178]">"."</span>); 
+  }
+  Serial.println(<span class="text-[#ce9178]">"\nWiFi Connected!"</span>);
+  Serial.print(<span class="text-[#ce9178]">"IP Address: "</span>); Serial.println(WiFi.localIP());
+
+  <span class="text-[#6a9955]">// 2. START MDNS</span>
+  <span class="text-[#c586c0]">if</span> (!MDNS.begin(mdnsName)) {
+    Serial.println(<span class="text-[#ce9178]">"Error setting up MDNS responder!"</span>);
+  } <span class="text-[#c586c0]">else</span> {
+    Serial.println(<span class="text-[#ce9178]">"mDNS responder started"</span>);
+    Serial.print(<span class="text-[#ce9178]">"Access at: http://"</span>);
+    Serial.print(mdnsName);
+    Serial.println(<span class="text-[#ce9178]">".local"</span>);
+  }
+
+  <span class="text-[#6a9955]">// Init Sensors</span>
+  <span class="text-[#c586c0]">if</span> (!mpu.begin()) Serial.println(<span class="text-[#ce9178]">"MPU Error"</span>);
+  <span class="text-[#c586c0]">if</span> (!particleSensor.begin(Wire, I2C_SPEED_STANDARD)) Serial.println(<span class="text-[#ce9178]">"MAX Error"</span>);
+  
+  particleSensor.setup(<span class="text-[#b5cea8]">60</span>, <span class="text-[#b5cea8]">4</span>, <span class="text-[#b5cea8]">2</span>, <span class="text-[#b5cea8]">100</span>, <span class="text-[#b5cea8]">411</span>, <span class="text-[#b5cea8]">4096</span>);
+
+  <span class="text-[#6a9955]">// Setup Web Server</span>
+  server.on(<span class="text-[#ce9178]">"/"</span>, handleRoot);
+  server.begin();
+  Serial.println(<span class="text-[#ce9178]">"Web server started"</span>);
+}
+
+<span class="text-[#569cd6]">void</span> <span class="text-[#dcdcaa]">loop</span>() {
+  server.handleClient(); <span class="text-[#6a9955]">// Keep the web server running</span>
+
+  <span class="text-[#6a9955]">// 1. TEMPERATURE</span>
+  <span class="text-[#569cd6]">int</span> analogValue = analogRead(THERMISTOR_PIN);
+  <span class="text-[#c586c0]">if</span>(analogValue > <span class="text-[#b5cea8]">0</span>) {
+    <span class="text-[#569cd6]">float</span> resistance = SERIES_RESISTOR / ((ADC_MAX / (<span class="text-[#569cd6]">float</span>)analogValue) - <span class="text-[#b5cea8]">1</span>);
+    <span class="text-[#569cd6]">float</span> steinhart = log(resistance / NOMINAL_RESISTANCE) / B_COEFFICIENT;
+    steinhart += <span class="text-[#b5cea8]">1.0</span> / (<span class="text-[#b5cea8]">25</span> + <span class="text-[#b5cea8]">273.15</span>);
+    bodyTemp = (<span class="text-[#b5cea8]">1.0</span> / steinhart) - <span class="text-[#b5cea8]">273.15</span>;
+  }
+
+  <span class="text-[#6a9955]">// 2. MOVEMENT</span>
+  <span class="text-[#4ec9b0]">sensors_event_t</span> a, g, t;
+  mpu.getEvent(&amp;a, &amp;g, &amp;t);
+  <span class="text-[#569cd6]">float</span> netAcc = sqrt(sq(a.acceleration.x) + sq(a.acceleration.y) + sq(a.acceleration.z));
+  <span class="text-[#c586c0]">if</span> (netAcc > <span class="text-[#b5cea8]">25.0</span>) motion = <span class="text-[#ce9178]">"FALL DETECTED!"</span>;
+  <span class="text-[#c586c0]">else if</span> (netAcc > <span class="text-[#b5cea8]">16.0</span>) motion = <span class="text-[#ce9178]">"Abnormal Shaking"</span>;
+  <span class="text-[#c586c0]">else if</span> (netAcc > <span class="text-[#b5cea8]">12.5</span> || netAcc < <span class="text-[#b5cea8]">7.5</span>) motion = <span class="text-[#ce9178]">"Moving"</span>;
+  <span class="text-[#c586c0]">else</span> motion = <span class="text-[#ce9178]">"Stable"</span>;
+
+  <span class="text-[#6a9955]">// 3. VITALS (MAX30102/5)</span>
+  <span class="text-[#569cd6]">long</span> irValue = particleSensor.getIR();
+  <span class="text-[#c586c0]">if</span> (irValue > <span class="text-[#b5cea8]">50000</span>) {
+    <span class="text-[#c586c0]">if</span> (checkForBeat(irValue)) {
+      <span class="text-[#569cd6]">long</span> delta = millis() - lastBeat;
+      lastBeat = millis();
+      <span class="text-[#569cd6]">float</span> bpm = <span class="text-[#b5cea8]">60</span> / (delta / <span class="text-[#b5cea8]">1000.0</span>);
+      <span class="text-[#c586c0]">if</span> (bpm < <span class="text-[#b5cea8]">255</span> &amp;&amp; bpm > <span class="text-[#b5cea8]">20</span>) {
+        rates[rateSpot++] = (<span class="text-[#569cd6]">byte</span>)bpm;
+        rateSpot %= RATE_SIZE;
+        beatAvg = <span class="text-[#b5cea8]">0</span>;
+        <span class="text-[#c586c0]">for</span> (<span class="text-[#569cd6]">byte</span> x = <span class="text-[#b5cea8]">0</span>; x < RATE_SIZE; x++) beatAvg += rates[x];
+        beatAvg /= RATE_SIZE;
+      }
+    }
+    approxSpO2 = <span class="text-[#b5cea8]">104</span> - (<span class="text-[#b5cea8]">17</span> * ((<span class="text-[#569cd6]">float</span>)particleSensor.getRed() / irValue));
+    <span class="text-[#c586c0]">if</span> (approxSpO2 > <span class="text-[#b5cea8]">100</span>) approxSpO2 = <span class="text-[#b5cea8]">100</span>;
+  } <span class="text-[#c586c0]">else</span> {
+    beatAvg = <span class="text-[#b5cea8]">0</span>; approxSpO2 = <span class="text-[#b5cea8]">0</span>;
+  }
+
+  <span class="text-[#6a9955]">// 4. SEND DATA TO N8N</span>
+  <span class="text-[#c586c0]">if</span> (millis() - lastPostTime > postInterval) {
+    <span class="text-[#c586c0]">if</span> (WiFi.status() == WL_CONNECTED) {
+      <span class="text-[#4ec9b0]">HTTPClient</span> http;
+      http.begin(n8n_webhook);
+      http.addHeader(<span class="text-[#ce9178]">"Content-Type"</span>, <span class="text-[#ce9178]">"application/json"</span>);
+
+      <span class="text-[#4ec9b0]">String</span> jsonPayload = <span class="text-[#ce9178]">"{"</span>;
+      jsonPayload += <span class="text-[#ce9178]">"\"temp_obj\":"</span> + String(bodyTemp) + <span class="text-[#ce9178]">","</span>;
+      jsonPayload += <span class="text-[#ce9178]">"\"acc_x\":"</span> + String(a.acceleration.x) + <span class="text-[#ce9178]">","</span>;
+      jsonPayload += <span class="text-[#ce9178]">"\"acc_y\":"</span> + String(a.acceleration.y) + <span class="text-[#ce9178]">","</span>;
+      jsonPayload += <span class="text-[#ce9178]">"\"acc_z\":"</span> + String(a.acceleration.z) + <span class="text-[#ce9178]">","</span>;
+      jsonPayload += <span class="text-[#ce9178]">"\"heart_rate\":"</span> + String(beatAvg) + <span class="text-[#ce9178]">","</span>; 
+      jsonPayload += <span class="text-[#ce9178]">"\"spo2\":"</span> + String(approxSpO2);
+      jsonPayload += <span class="text-[#ce9178]">"}"</span>;
+
+      <span class="text-[#569cd6]">int</span> httpResponseCode = http.POST(jsonPayload);
+      
+      Serial.print(<span class="text-[#ce9178]">"n8n HTTP Response: "</span>);
+      Serial.println(httpResponseCode);
+      
+      http.end();
+    }
+    lastPostTime = millis();
+  }
+}
+                            </code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-24 lg:mt-32 border-t border-gray-200 dark:border-gray-700 pt-16 lg:pt-24">
+                <div class="text-center mb-16 lg:mb-24">
+                    <span class="text-[#E22C2C] font-bold tracking-widest uppercase text-sm mb-2 block font-['Poppins']"><i class="fa-solid fa-mobile-screen mr-1"></i> Caregiver Interface</span>
+                    <h2 class="text-4xl lg:text-5xl font-bold text-[#707070] dark:text-gray-200 font-['Poppins'] transition-colors">Mobile Application</h2>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                    
+                    <div class="order-2 lg:order-1 flex justify-center relative mt-10 lg:mt-0">
+                        <div class="absolute w-[240px] lg:w-[280px] h-[450px] lg:h-[500px] bg-[#E22C2C] rounded-[3rem] blur-[60px] opacity-20 mobile-glow z-0 transition-all duration-300"></div>
+                        
+                        <div class="relative z-10 w-[260px] lg:w-[300px] h-[520px] lg:h-[600px] bg-gray-900 dark:bg-black rounded-[2.5rem] lg:rounded-[3rem] p-2 lg:p-3 shadow-2xl border-[3px] lg:border-[4px] border-gray-300 dark:border-gray-700">
+                            <div class="absolute top-3 lg:top-4 left-1/2 transform -translate-x-1/2 w-24 lg:w-32 h-5 lg:h-6 bg-black rounded-b-xl z-20"></div>
+                            
+                            <div class="w-full h-full bg-white dark:bg-gray-800 rounded-[2rem] lg:rounded-[2.2rem] overflow-hidden relative flex items-center justify-center border border-gray-200 dark:border-gray-800">
+                                <img src="images/mobileapp.jpg" alt="Mobile App UI" class="w-full h-full object-cover">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="order-1 lg:order-2 text-center lg:text-left">
+                        <h3 class="text-3xl lg:text-4xl font-bold text-gray-800 dark:text-gray-100 font-['Poppins'] mb-4 lg:mb-6 leading-tight transition-colors">Real-Time Health Dashboard</h3>
+                        <p class="text-base lg:text-lg text-gray-600 dark:text-gray-400 mb-10 lg:mb-10 leading-relaxed transition-colors">
+                            Our dedicated mobile application acts as a real-time dashboard for caregivers, displaying all critical sensor readings in one centralized, easy-to-read interface.
+                        </p>
+
+                        <div class="space-y-6 lg:space-y-8 text-left">
+                            <div class="flex items-start space-x-4 lg:space-x-5 group">
+                                <div class="w-12 h-12 lg:w-14 lg:h-14 bg-red-50 dark:bg-red-900/30 rounded-xl lg:rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-[#E22C2C] group-hover:text-white transition-all duration-300">
+                                    <i class="fa-solid fa-heart-pulse text-[#E22C2C] group-hover:text-white text-xl lg:text-2xl transition-colors"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-gray-200 font-['Poppins'] mb-1 lg:mb-2 transition-colors">Live Vitals Display</h4>
+                                    <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400 leading-relaxed transition-colors">Continuously updates and displays Heart Rate, SpO2, and Body Temperature directly from the hardware sensors.</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-4 lg:space-x-5 group">
+                                <div class="w-12 h-12 lg:w-14 lg:h-14 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl lg:rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
+                                    <i class="fa-solid fa-person-running text-indigo-500 group-hover:text-white text-xl lg:text-2xl transition-colors"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-gray-200 font-['Poppins'] mb-1 lg:mb-2 transition-colors">Activity & Motion Status</h4>
+                                    <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400 leading-relaxed transition-colors">Shows the current physical state of the patient, instantly updating if a fall or abnormal movement is detected.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-4 lg:space-x-5 group">
+                                <div class="w-12 h-12 lg:w-14 lg:h-14 bg-green-50 dark:bg-green-900/30 rounded-xl lg:rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-green-500 group-hover:text-white transition-all duration-300">
+                                    <i class="fa-solid fa-bell text-green-500 group-hover:text-white text-xl lg:text-2xl transition-colors"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-gray-200 font-['Poppins'] mb-1 lg:mb-2 transition-colors">Seamless Sync</h4>
+                                    <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400 leading-relaxed transition-colors">Receives wireless telemetry data effortlessly, ensuring caregivers are always informed without delay.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="sensors" class="py-20 lg:py-32 px-6 bg-white dark:bg-gray-900 transition-colors duration-300 relative overflow-hidden">
+        
+        <div class="text-center mb-16 lg:mb-24 max-w-4xl mx-auto">
+            <h2 class="text-4xl lg:text-5xl font-bold mb-4 lg:mb-6 text-[#707070] dark:text-gray-200 font-['Poppins'] tracking-tight transition-colors">Hardware Components</h2>
+            <p class="text-lg lg:text-xl text-gray-500 dark:text-gray-400 italic transition-colors">The powerful hardware that makes our system reliable and efficient.</p>
+        </div>
+
+        <div id="esp32" class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div class="order-2 lg:order-1 text-center lg:text-left">
+                <span class="text-[#E22C2C] font-bold tracking-widest uppercase text-xs lg:text-sm mb-3 block font-['Poppins']"><i class="fa-solid fa-microchip mr-2"></i>The Brain</span>
+                <h3 class="text-3xl lg:text-4xl font-bold text-gray-800 dark:text-gray-100 font-['Poppins'] mb-4 lg:mb-6 leading-tight transition-colors">ESP32 Dev Module</h3>
+                <p class="text-base lg:text-lg text-gray-600 dark:text-gray-400 mb-8 lg:mb-10 leading-relaxed transition-colors">
+                    The core of our wearable system is the ESP32, a powerful microcontroller designed for the modern IoT era.
+                </p>
+
+                <div class="space-y-6 lg:space-y-8 text-left">
+                    <div class="flex items-start space-x-4 lg:space-x-5 group">
+                        <div class="w-12 h-12 lg:w-14 lg:h-14 bg-blue-50 dark:bg-blue-900/30 rounded-xl lg:rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-blue-500 group-hover:text-white transition-all duration-300">
+                            <i class="fa-solid fa-wifi text-blue-500 group-hover:text-white text-xl lg:text-2xl transition-colors"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-gray-200 font-['Poppins'] mb-1 lg:mb-2 transition-colors">Wireless Connectivity</h4>
+                            <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400 leading-relaxed transition-colors">Features built-in Wi-Fi and Bluetooth, allowing for seamless real-time data transfer to the cloud or mobile apps.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-4 lg:space-x-5 group">
+                        <div class="w-12 h-12 lg:w-14 lg:h-14 bg-green-50 dark:bg-green-900/30 rounded-xl lg:rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-green-500 group-hover:text-white transition-all duration-300">
+                            <i class="fa-solid fa-leaf text-green-500 group-hover:text-white text-xl lg:text-2xl transition-colors"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-gray-200 font-['Poppins'] mb-1 lg:mb-2 transition-colors">Efficiency</h4>
+                            <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400 leading-relaxed transition-colors">Engineered for low power consumption, making it the ideal choice for wearable, battery-operated devices.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-4 lg:space-x-5 group">
+                        <div class="w-12 h-12 lg:w-14 lg:h-14 bg-purple-50 dark:bg-purple-900/30 rounded-xl lg:rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-purple-500 group-hover:text-white transition-all duration-300">
+                            <i class="fa-solid fa-gauge-high text-purple-500 group-hover:text-white text-xl lg:text-2xl transition-colors"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-gray-200 font-['Poppins'] mb-1 lg:mb-2 transition-colors">Performance</h4>
+                            <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400 leading-relaxed transition-colors">Offers faster processing speeds and more GPIO pins compared to traditional boards like the Arduino Uno.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="order-1 lg:order-2 relative flex justify-center items-center h-[300px] lg:h-[500px]">
+                <div class="absolute w-[200px] lg:w-[350px] h-[200px] lg:h-[350px] bg-blue-500/20 dark:bg-blue-500/10 rounded-full blur-[60px] lg:blur-[80px] transition-colors"></div>
+                <div class="absolute w-[250px] lg:w-[400px] h-[250px] lg:h-[400px] border-[2px] border-dashed border-gray-300 dark:border-gray-700 rounded-full animate-spin-slow"></div>
+                <div class="absolute w-[180px] lg:w-[300px] h-[180px] lg:h-[300px] border-[2px] border-solid border-blue-400/40 rounded-full animate-spin-slow-reverse"></div>
+                <div class="absolute w-[120px] lg:w-[200px] h-[120px] lg:h-[200px] border-[1px] border-dashed border-[#E22C2C]/50 rounded-full animate-spin-slow" style="animation-duration: 10s;"></div>
+                
+                <img src="images/esp32.png" alt="ESP32 Vector" class="relative z-10 w-48 lg:w-80 h-auto animate-float drop-shadow-[0_25px_35px_rgba(0,0,0,0.2)]">
+            </div>
+        </div>
+
+        <div id="max30105" class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-center mt-20 lg:mt-32 border-t border-gray-100 dark:border-gray-800 pt-20 lg:pt-32 transition-colors">
+            
+            <div class="order-1 lg:order-1 relative flex justify-center items-center h-[300px] lg:h-[500px]">
+                <div class="absolute w-[200px] lg:w-[350px] h-[200px] lg:h-[350px] bg-red-500/20 dark:bg-red-500/10 rounded-full blur-[60px] lg:blur-[80px] transition-colors"></div>
+                <div class="absolute w-[250px] lg:w-[400px] h-[250px] lg:h-[400px] border-[2px] border-dashed border-gray-300 dark:border-gray-700 rounded-full animate-spin-slow"></div>
+                <div class="absolute w-[180px] lg:w-[300px] h-[180px] lg:h-[300px] border-[2px] border-solid border-red-400/40 rounded-full animate-spin-slow-reverse"></div>
+                <div class="absolute w-[120px] lg:w-[200px] h-[120px] lg:h-[200px] border-[1px] border-dashed border-red-500/50 rounded-full animate-spin-slow" style="animation-duration: 10s;"></div>
+                
+                <img src="images/max30105.png" alt="MAX30102 Vector" class="relative z-10 w-48 lg:w-80 h-auto animate-float drop-shadow-[0_25px_35px_rgba(0,0,0,0.2)]">
+            </div>
+
+            <div class="order-2 lg:order-2 text-center lg:text-left">
+                <span class="text-[#E22C2C] font-bold tracking-widest uppercase text-xs lg:text-sm mb-3 block font-['Poppins']"><i class="fa-solid fa-heart-pulse mr-2"></i>Vital Signs</span>
+                <h3 class="text-3xl lg:text-4xl font-bold text-gray-800 dark:text-gray-100 font-['Poppins'] mb-4 lg:mb-6 leading-tight transition-colors">Heart Rate Sensor (MAX30102)</h3>
+                <p class="text-base lg:text-lg text-gray-600 dark:text-gray-400 mb-8 lg:mb-10 leading-relaxed transition-colors">
+                    To monitor the patient's cardiovascular health, we integrated the MAX30102 high-sensitivity pulse oximeter.
+                </p>
+
+                <div class="space-y-6 lg:space-y-8 text-left">
+                    <div class="flex items-start space-x-4 lg:space-x-5 group">
+                        <div class="w-12 h-12 lg:w-14 lg:h-14 bg-red-50 dark:bg-red-900/30 rounded-xl lg:rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-red-500 group-hover:text-white transition-all duration-300">
+                            <i class="fa-solid fa-heart-circle-check text-red-500 group-hover:text-white text-xl lg:text-2xl transition-colors"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-gray-200 font-['Poppins'] mb-1 lg:mb-2 transition-colors">Dual Monitoring</h4>
+                            <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400 leading-relaxed transition-colors">It measures both heart rate and blood oxygen saturation (SpO2) using advanced PPG technology.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-4 lg:space-x-5 group">
+                        <div class="w-12 h-12 lg:w-14 lg:h-14 bg-teal-50 dark:bg-teal-900/30 rounded-xl lg:rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-teal-500 group-hover:text-white transition-all duration-300">
+                            <i class="fa-solid fa-compress text-teal-500 group-hover:text-white text-xl lg:text-2xl transition-colors"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-gray-200 font-['Poppins'] mb-1 lg:mb-2 transition-colors">Wearable Design</h4>
+                            <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400 leading-relaxed transition-colors">Its ultra-compact size allows it to be integrated into clothing without causing discomfort to the user.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-4 lg:space-x-5 group">
+                        <div class="w-12 h-12 lg:w-14 lg:h-14 bg-orange-50 dark:bg-orange-900/30 rounded-xl lg:rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-orange-500 group-hover:text-white transition-all duration-300">
+                            <i class="fa-solid fa-bullseye text-orange-500 group-hover:text-white text-xl lg:text-2xl transition-colors"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-gray-200 font-['Poppins'] mb-1 lg:mb-2 transition-colors">Reliability</h4>
+                            <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400 leading-relaxed transition-colors">Provides high-precision readings especially when the user is in a resting state.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="mpu6050" class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-center mt-20 lg:mt-32 border-t border-gray-100 dark:border-gray-800 pt-20 lg:pt-32 transition-colors">
+            
+            <div class="order-2 lg:order-1 text-center lg:text-left">
+                <span class="text-indigo-500 font-bold tracking-widest uppercase text-xs lg:text-sm mb-3 block font-['Poppins']"><i class="fa-solid fa-person-falling mr-2"></i>Activity Tracking</span>
+                <h3 class="text-3xl lg:text-4xl font-bold text-gray-800 dark:text-gray-100 font-['Poppins'] mb-4 lg:mb-6 leading-tight transition-colors">Motion Sensor (MPU6050)</h3>
+                <p class="text-base lg:text-lg text-gray-600 dark:text-gray-400 mb-8 lg:mb-10 leading-relaxed transition-colors">
+                    Safety is our priority, which is why we use the MPU6050 to track the patient’s physical activity.
+                </p>
+
+                <div class="space-y-6 lg:space-y-8 text-left">
+                    <div class="flex items-start space-x-4 lg:space-x-5 group">
+                        <div class="w-12 h-12 lg:w-14 lg:h-14 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl lg:rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
+                            <i class="fa-solid fa-arrows-up-down-left-right text-indigo-500 group-hover:text-white text-xl lg:text-2xl transition-colors"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-gray-200 font-['Poppins'] mb-1 lg:mb-2 transition-colors">Movement Analysis</h4>
+                            <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400 leading-relaxed transition-colors">Provides both acceleration and rotation data, detecting motion and tilt with high resolution.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-4 lg:space-x-5 group">
+                        <div class="w-12 h-12 lg:w-14 lg:h-14 bg-rose-50 dark:bg-rose-900/30 rounded-xl lg:rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-rose-500 group-hover:text-white transition-all duration-300">
+                            <i class="fa-solid fa-triangle-exclamation text-rose-500 group-hover:text-white text-xl lg:text-2xl transition-colors"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-gray-200 font-['Poppins'] mb-1 lg:mb-2 transition-colors">Emergency Detection</h4>
+                            <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400 leading-relaxed transition-colors">Crucial for detecting sudden falls or abnormal movements, vital for disabled users.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="order-1 lg:order-2 relative flex justify-center items-center h-[300px] lg:h-[500px]">
+                <div class="absolute w-[200px] lg:w-[350px] h-[200px] lg:h-[350px] bg-indigo-500/20 dark:bg-indigo-500/10 rounded-full blur-[60px] lg:blur-[80px] transition-colors"></div>
+                <div class="absolute w-[250px] lg:w-[400px] h-[250px] lg:h-[400px] border-[2px] border-dashed border-gray-300 dark:border-gray-700 rounded-full animate-spin-slow"></div>
+                <div class="absolute w-[180px] lg:w-[300px] h-[180px] lg:h-[300px] border-[2px] border-solid border-indigo-400/40 rounded-full animate-spin-slow-reverse"></div>
+                <div class="absolute w-[120px] lg:w-[200px] h-[120px] lg:h-[200px] border-[1px] border-dashed border-indigo-500/50 rounded-full animate-spin-slow" style="animation-duration: 10s;"></div>
+                
+                <img src="images/mpu6050.png" alt="MPU6050 Vector" class="relative z-10 w-48 lg:w-80 h-auto animate-float drop-shadow-[0_25px_35px_rgba(0,0,0,0.2)]">
+            </div>
+
+        </div>
+
+        <div id="mlx90614" class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-center mt-20 lg:mt-32 border-t border-gray-100 dark:border-gray-800 pt-20 lg:pt-32 transition-colors">
+            
+            <div class="order-1 lg:order-1 relative flex justify-center items-center h-[300px] lg:h-[500px]">
+                <div class="absolute w-[200px] lg:w-[350px] h-[200px] lg:h-[350px] bg-orange-500/20 dark:bg-orange-500/10 rounded-full blur-[60px] lg:blur-[80px] transition-colors"></div>
+                <div class="absolute w-[250px] lg:w-[400px] h-[250px] lg:h-[400px] border-[2px] border-dashed border-gray-300 dark:border-gray-700 rounded-full animate-spin-slow"></div>
+                <div class="absolute w-[180px] lg:w-[300px] h-[180px] lg:h-[300px] border-[2px] border-solid border-orange-400/40 rounded-full animate-spin-slow-reverse"></div>
+                <div class="absolute w-[120px] lg:w-[200px] h-[120px] lg:h-[200px] border-[1px] border-dashed border-orange-500/50 rounded-full animate-spin-slow" style="animation-duration: 10s;"></div>
+                
+                <img src="images/mlx90614.png" alt="MLX90614 Vector" class="relative z-10 w-48 lg:w-80 h-auto animate-float drop-shadow-[0_25px_35px_rgba(0,0,0,0.2)]">
+            </div>
+
+            <div class="order-2 lg:order-2 text-center lg:text-left">
+                <span class="text-orange-500 font-bold tracking-widest uppercase text-xs lg:text-sm mb-3 block font-['Poppins']"><i class="fa-solid fa-temperature-half mr-2"></i>Body Temperature</span>
+                <h3 class="text-3xl lg:text-4xl font-bold text-gray-800 dark:text-gray-100 font-['Poppins'] mb-4 lg:mb-6 leading-tight transition-colors">Temp Sensor (MLX90614)</h3>
+                <p class="text-base lg:text-lg text-gray-600 dark:text-gray-400 mb-8 lg:mb-10 leading-relaxed transition-colors">
+                    For body temperature tracking, we chose the MLX90614 infrared thermometer for its clinical-grade performance.
+                </p>
+
+                <div class="space-y-6 lg:space-y-8 text-left">
+                    <div class="flex items-start space-x-4 lg:space-x-5 group">
+                        <div class="w-12 h-12 lg:w-14 lg:h-14 bg-orange-50 dark:bg-orange-900/30 rounded-xl lg:rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-orange-500 group-hover:text-white transition-all duration-300">
+                            <i class="fa-solid fa-hands-bubbles text-orange-500 group-hover:text-white text-xl lg:text-2xl transition-colors"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-gray-200 font-['Poppins'] mb-1 lg:mb-2 transition-colors">Hygiene & Comfort</h4>
+                            <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400 leading-relaxed transition-colors">Allows for non-contact measurement, meaning it can read temperature accurately even through thin clothing.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-4 lg:space-x-5 group">
+                        <div class="w-12 h-12 lg:w-14 lg:h-14 bg-yellow-50 dark:bg-yellow-900/30 rounded-xl lg:rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-yellow-500 group-hover:text-white transition-all duration-300">
+                            <i class="fa-solid fa-crosshairs text-yellow-500 group-hover:text-white text-xl lg:text-2xl transition-colors"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-gray-200 font-['Poppins'] mb-1 lg:mb-2 transition-colors">Precision</h4>
+                            <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400 leading-relaxed transition-colors">Delivers fast and highly accurate responses to thermal changes.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="ad8232" class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-center mt-20 lg:mt-32 border-t border-gray-100 dark:border-gray-800 pt-20 lg:pt-32 transition-colors">
+            
+            <div class="order-2 lg:order-1 text-center lg:text-left">
+                <span class="text-pink-500 font-bold tracking-widest uppercase text-xs lg:text-sm mb-3 block font-['Poppins']"><i class="fa-solid fa-wave-square mr-2"></i>ECG Analysis</span>
+                <h3 class="text-3xl lg:text-4xl font-bold text-gray-800 dark:text-gray-100 font-['Poppins'] mb-4 lg:mb-6 leading-tight transition-colors">Cardiac Monitor (AD8232)</h3>
+                <p class="text-base lg:text-lg text-gray-600 dark:text-gray-400 mb-8 lg:mb-10 leading-relaxed transition-colors">
+                    To provide a comprehensive cardiovascular analysis, we integrated the AD8232 heart rate monitor, which acts as a single-lead ECG.
+                </p>
+
+                <div class="space-y-6 lg:space-y-8 text-left">
+                    <div class="flex items-start space-x-4 lg:space-x-5 group">
+                        <div class="w-12 h-12 lg:w-14 lg:h-14 bg-pink-50 dark:bg-pink-900/30 rounded-xl lg:rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-pink-500 group-hover:text-white transition-all duration-300">
+                            <i class="fa-solid fa-bolt text-pink-500 group-hover:text-white text-xl lg:text-2xl transition-colors"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-gray-200 font-['Poppins'] mb-1 lg:mb-2 transition-colors">Electrophysiological Tracking</h4>
+                            <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400 leading-relaxed transition-colors">Measures the actual electrical activity of the heart, providing an Electrocardiogram (ECG) signal.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-4 lg:space-x-5 group">
+                        <div class="w-12 h-12 lg:w-14 lg:h-14 bg-fuchsia-50 dark:bg-fuchsia-900/30 rounded-xl lg:rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-fuchsia-500 group-hover:text-white transition-all duration-300">
+                            <i class="fa-solid fa-filter text-fuchsia-500 group-hover:text-white text-xl lg:text-2xl transition-colors"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-gray-200 font-['Poppins'] mb-1 lg:mb-2 transition-colors">Signal Clarity</h4>
+                            <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400 leading-relaxed transition-colors">Designed to extract, amplify, and filter small bio-potential signals even in noisy environments.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-4 lg:space-x-5 group">
+                        <div class="w-12 h-12 lg:w-14 lg:h-14 bg-purple-50 dark:bg-purple-900/30 rounded-xl lg:rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-purple-500 group-hover:text-white transition-all duration-300">
+                            <i class="fa-solid fa-stethoscope text-purple-500 group-hover:text-white text-xl lg:text-2xl transition-colors"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg lg:text-xl font-bold text-gray-800 dark:text-gray-200 font-['Poppins'] mb-1 lg:mb-2 transition-colors">Advanced Diagnostics</h4>
+                            <p class="text-xs lg:text-sm text-gray-500 dark:text-gray-400 leading-relaxed transition-colors">Crucial for detecting irregular heart rhythms (Arrhythmias) and providing deeper clinical insights in real-time.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="order-1 lg:order-2 relative flex justify-center items-center h-[300px] lg:h-[500px]">
+                <div class="absolute w-[200px] lg:w-[350px] h-[200px] lg:h-[350px] bg-pink-500/20 dark:bg-pink-500/10 rounded-full blur-[60px] lg:blur-[80px] transition-colors"></div>
+                <div class="absolute w-[250px] lg:w-[400px] h-[250px] lg:h-[400px] border-[2px] border-dashed border-gray-300 dark:border-gray-700 rounded-full animate-spin-slow"></div>
+                <div class="absolute w-[180px] lg:w-[300px] h-[180px] lg:h-[300px] border-[2px] border-solid border-pink-400/40 rounded-full animate-spin-slow-reverse"></div>
+                <div class="absolute w-[120px] lg:w-[200px] h-[120px] lg:h-[200px] border-[1px] border-dashed border-pink-500/50 rounded-full animate-spin-slow" style="animation-duration: 10s;"></div>
+                
+                <img src="images/ad8232.png" alt="AD8232 Vector" class="relative z-10 w-48 lg:w-80 h-auto animate-float drop-shadow-[0_25px_35px_rgba(0,0,0,0.2)]">
+            </div>
+
+        </div>
+
+    </section>
+
+    <a href="about.html" class="fixed bottom-6 right-6 lg:bottom-8 lg:right-8 z-[100] w-12 h-12 lg:w-16 lg:h-16 bg-[#E22C2C] text-white rounded-full flex flex-col items-center justify-center shadow-[0_10px_25px_rgba(226,44,44,0.4)] hover:bg-black dark:hover:bg-gray-700 hover:scale-110 transition-all duration-300 cursor-pointer group">
+        <i class="fa-solid fa-users text-lg lg:text-xl mb-0 lg:mb-1 group-hover:animate-bounce"></i>
+        <span class="text-[6px] lg:text-[8px] font-bold font-['Poppins'] uppercase tracking-widest hidden lg:block">About Us</span>
+    </a>
+
+    <script>
+        // سكريبت الـ Mobile Menu 
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        mobileBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('open');
+        });
+
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('open');
+            });
+        });
+
+        // سكريبت السكرول
+        const sections = document.querySelectorAll("section");
+        const navLinks = document.querySelectorAll(".nav-link");
+
+        window.addEventListener("scroll", () => {
+            let current = "";
+            sections.forEach((section) => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 150) {
+                    current = section.getAttribute("id");
+                }
+            });
+
+            navLinks.forEach((link) => {
+                link.classList.remove("active");
+                if (link.getAttribute("href").includes(current)) {
+                    link.classList.add("active");
+                }
+            });
+        });
+
+        // سكريبت الدارك مود
+        const themeToggleBtns = document.querySelectorAll('.theme-toggle-btn');
+        const darkIcons = document.querySelectorAll('.dark-icon');
+        const lightIcons = document.querySelectorAll('.light-icon');
+
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            lightIcons.forEach(icon => icon.classList.remove('hidden'));
+        } else {
+            darkIcons.forEach(icon => icon.classList.remove('hidden'));
+        }
+
+        themeToggleBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                darkIcons.forEach(icon => icon.classList.toggle('hidden'));
+                lightIcons.forEach(icon => icon.classList.toggle('hidden'));
+
+                if (localStorage.getItem('color-theme')) {
+                    if (localStorage.getItem('color-theme') === 'light') {
+                        document.documentElement.classList.add('dark');
+                        localStorage.setItem('color-theme', 'dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.setItem('color-theme', 'light');
+                    }
+                } else {
+                    if (document.documentElement.classList.contains('dark')) {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.setItem('color-theme', 'light');
+                    } else {
+                        document.documentElement.classList.add('dark');
+                        localStorage.setItem('color-theme', 'dark');
+                    }
+                }
+            });
+        });
+
+        function playFullscreenVideo() {
+            var video = document.getElementById("projectVideo");
+            if (video.requestFullscreen) { video.requestFullscreen(); } 
+            else if (video.webkitRequestFullscreen) { video.webkitRequestFullscreen(); } 
+            else if (video.msRequestFullscreen) { video.msRequestFullscreen(); }
+            video.play();
+            document.querySelector('.play-btn').style.display = 'none';
+        }
+
+        document.getElementById("projectVideo").addEventListener('pause', function() {
+            document.querySelector('.play-btn').style.display = 'flex';
+        });
+    </script>
+</body>
+</html>

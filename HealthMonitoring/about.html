@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Team | Health Monitoring System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Lora', serif; }
+        /* أنميشن خفيف عند تحريك الماوس على الكارت */
+        .team-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .team-card:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 25px 50px -12px rgba(226, 44, 44, 0.15); }
+    </style>
+
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    </script>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 overflow-x-hidden transition-colors duration-300">
+
+    <nav class="w-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-sm border-b border-gray-100 dark:border-gray-800 px-4 lg:px-6 py-3 lg:py-4 flex justify-between items-center fixed top-0 z-50 transition-colors duration-300">
+        <div class="flex items-center space-x-2 lg:space-x-3">
+            <i class="fa-solid fa-heart-pulse text-[#E22C2C] text-xl lg:text-2xl"></i>
+            <span class="font-bold text-lg lg:text-xl font-['Poppins'] tracking-tight dark:text-white">HealthMonitor</span>
+        </div>
+        
+        <div class="flex items-center space-x-4 lg:space-x-6">
+            <a href="index.html" class="text-gray-500 dark:text-gray-400 hover:text-[#E22C2C] dark:hover:text-[#E22C2C] font-['Poppins'] font-bold text-xs lg:text-sm uppercase transition-colors flex items-center">
+                <i class="fa-solid fa-arrow-left mr-1 lg:mr-2"></i> 
+                <span>Back <span class="hidden sm:inline">to Home</span></span>
+            </a>
+            
+            <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full text-sm p-2 transition-colors">
+                <i id="theme-toggle-dark-icon" class="fa-solid fa-moon text-base lg:text-lg hidden"></i>
+                <i id="theme-toggle-light-icon" class="fa-solid fa-sun text-base lg:text-lg hidden"></i>
+            </button>
+        </div>
+    </nav>
+
+    <section class="pt-32 pb-16 lg:pt-36 lg:pb-24 px-4 lg:px-6 min-h-screen flex flex-col justify-center relative overflow-hidden">
+        
+        <div class="absolute inset-0 z-0">
+            <div class="absolute top-0 right-0 w-96 h-96 bg-red-50 dark:bg-red-900/20 rounded-full blur-[120px] opacity-70"></div>
+            <div class="absolute bottom-0 left-0 w-96 h-96 bg-blue-50 dark:bg-blue-900/10 rounded-full blur-[120px] opacity-50"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto text-center w-full relative z-10">
+            <h1 class="text-4xl lg:text-5xl font-bold mb-3 lg:mb-4 text-[#707070] dark:text-gray-200 font-['Poppins'] tracking-tight transition-colors">Meet Our Team</h1>
+            <p class="text-base lg:text-xl text-gray-500 dark:text-gray-400 mb-8 lg:mb-12 italic transition-colors max-w-2xl mx-auto">The brilliant minds behind the Smart Health Monitoring System.</p>
+
+            <div class="mb-16 lg:mb-20 inline-block bg-white dark:bg-gray-800 px-6 py-3 lg:px-10 lg:py-5 rounded-full border border-gray-100 dark:border-gray-700 shadow-lg transition-colors max-w-full relative group">
+                <div class="absolute -inset-1 bg-gradient-to-r from-[#E22C2C] to-red-400 rounded-full blur opacity-10 group-hover:opacity-25 transition duration-500 pointer-events-none"></div>
+                <div class="relative flex flex-col items-center">
+                    <p class="text-[10px] lg:text-xs font-bold text-gray-400 dark:text-gray-500 font-['Poppins'] uppercase tracking-widest mb-1 lg:mb-1.5">Under the Supervision of</p>
+                    <p class="text-xl lg:text-3xl font-bold text-[#E22C2C] font-['Poppins'] truncate flex items-center"><i class="fa-solid fa-award mr-2.5 lg:mr-3 text-lg lg:text-2xl"></i>Dr. Sally Elgendy</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 text-left max-w-6xl mx-auto">
+                
+                <div class="team-card bg-white dark:bg-gray-800 p-6 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] shadow-xl hover:shadow-2xl hover:shadow-red-500/10 dark:hover:shadow-red-500/20 border border-gray-100 dark:border-gray-700 Transition-colors relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-red-50 dark:bg-red-900/30 rounded-full blur-3xl opacity-60 group-hover:scale-150 transition-transform duration-700"></div>
+                    <div class="relative z-10 flex flex-col h-full">
+                        <div class="w-32 h-44 lg:w-40 lg:h-56 mb-5 lg:mb-6 rounded-3xl overflow-hidden border-[3px] lg:border-4 border-[#E22C2C]/40 shadow-inner transition-colors flex items-center justify-center bg-gray-50 dark:bg-gray-700/30">
+                            <img src="images/karim.png" alt="Karim Wael" class="w-full h-full object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-500">
+                        </div>
+                        <h3 class="font-bold text-xl lg:text-2xl font-['Poppins'] text-gray-800 dark:text-gray-100 leading-tight transition-colors mb-2">Karim Wael<br>Othman Ali</h3>
+                        
+                        <p class="text-sm lg:text-base text-[#E22C2C] dark:text-red-400 font-bold mt-auto pt-3 lg:mt-auto lg:pt-4 border-t border-gray-100 dark:border-gray-700 transition-colors flex items-center"><i class="fa-solid fa-id-card mr-1.5 lg:mr-2 text-base"></i> 221053</p>
+                    </div>
+                </div>
+
+                <div class="team-card bg-white dark:bg-gray-800 p-6 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] shadow-xl hover:shadow-2xl hover:shadow-red-500/10 dark:hover:shadow-red-500/20 border border-gray-100 dark:border-gray-700 Transition-colors relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-red-50 dark:bg-red-900/30 rounded-full blur-3xl opacity-60 group-hover:scale-150 transition-transform duration-700"></div>
+                    <div class="relative z-10 flex flex-col h-full">
+                        <div class="w-32 h-44 lg:w-40 lg:h-56 mb-5 lg:mb-6 rounded-3xl overflow-hidden border-[3px] lg:border-4 border-[#E22C2C]/40 shadow-inner transition-colors flex items-center justify-center bg-gray-50 dark:bg-gray-700/30">
+                            <img src="images/mohamedadel1.jpeg" alt="Mohamed Adel Mohamed" class="w-full h-full object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-500">
+                        </div>
+                        <h3 class="font-bold text-xl lg:text-2xl font-['Poppins'] text-gray-800 dark:text-gray-100 leading-tight transition-colors mb-2">Mohamed Adel<br>Mohamed</h3>
+                        
+                        <p class="text-sm lg:text-base text-[#E22C2C] dark:text-red-400 font-bold mt-auto pt-3 lg:mt-auto lg:pt-4 border-t border-gray-100 dark:border-gray-700 transition-colors flex items-center"><i class="fa-solid fa-id-card mr-1.5 lg:mr-2 text-base"></i> 221148</p>
+                    </div>
+                </div>
+
+                <div class="team-card bg-white dark:bg-gray-800 p-6 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] shadow-xl hover:shadow-2xl hover:shadow-red-500/10 dark:hover:shadow-red-500/20 border border-gray-100 dark:border-gray-700 Transition-colors relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-red-50 dark:bg-red-900/30 rounded-full blur-3xl opacity-60 group-hover:scale-150 transition-transform duration-700"></div>
+                    <div class="relative z-10 flex flex-col h-full">
+                        <div class="w-32 h-44 lg:w-40 lg:h-56 mb-5 lg:mb-6 rounded-3xl overflow-hidden border-[3px] lg:border-4 border-[#E22C2C]/40 shadow-inner transition-colors flex items-center justify-center bg-gray-50 dark:bg-gray-700/30">
+                            <img src="images/mohamedadel3.jpg" alt="Mohamed Adel Lotfi" class="w-full h-full object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-500">
+                        </div>
+                        <h3 class="font-bold text-xl lg:text-2xl font-['Poppins'] text-gray-800 dark:text-gray-100 leading-tight transition-colors mb-2">Mohamed Adel<br>Lotfi</h3>
+                        
+                        <p class="text-sm lg:text-base text-[#E22C2C] dark:text-red-400 font-bold mt-auto pt-3 lg:mt-auto lg:pt-4 border-t border-gray-100 dark:border-gray-700 transition-colors flex items-center"><i class="fa-solid fa-id-card mr-1.5 lg:mr-2 text-base"></i> 220161</p>
+                    </div>
+                </div>
+
+                <div class="team-card bg-white dark:bg-gray-800 p-6 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] shadow-xl hover:shadow-2xl hover:shadow-red-500/10 dark:hover:shadow-red-500/20 border border-gray-100 dark:border-gray-700 Transition-colors relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-red-50 dark:bg-red-900/30 rounded-full blur-3xl opacity-60 group-hover:scale-150 transition-transform duration-700"></div>
+                    <div class="relative z-10 flex flex-col h-full">
+                        <div class="w-32 h-44 lg:w-40 lg:h-56 mb-5 lg:mb-6 rounded-3xl overflow-hidden border-[3px] lg:border-4 border-[#E22C2C]/40 shadow-inner transition-colors flex items-center justify-center bg-gray-50 dark:bg-gray-700/30">
+                            <img src="images/mohamedadel2.jpg" alt="Mohamed Adel Fouad" class="w-full h-full object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-500">
+                        </div>
+                        <h3 class="font-bold text-xl lg:text-2xl font-['Poppins'] text-gray-800 dark:text-gray-100 leading-tight transition-colors mb-2">Mohamed Adel<br>Fouad</h3>
+                        
+                        <p class="text-sm lg:text-base text-[#E22C2C] dark:text-red-400 font-bold mt-auto pt-3 lg:mt-auto lg:pt-4 border-t border-gray-100 dark:border-gray-700 transition-colors flex items-center"><i class="fa-solid fa-id-card mr-1.5 lg:mr-2 text-base"></i> 221323</p>
+                    </div>
+                </div>
+
+                <div class="team-card bg-white dark:bg-gray-800 p-6 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] shadow-xl hover:shadow-2xl hover:shadow-red-500/10 dark:hover:shadow-red-500/20 border border-gray-100 dark:border-gray-700 Transition-colors relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-red-50 dark:bg-red-900/30 rounded-full blur-3xl opacity-60 group-hover:scale-150 transition-transform duration-700"></div>
+                    <div class="relative z-10 flex flex-col h-full">
+                        <div class="w-32 h-44 lg:w-40 lg:h-56 mb-5 lg:mb-6 rounded-3xl overflow-hidden border-[3px] lg:border-4 border-[#E22C2C]/40 shadow-inner transition-colors flex items-center justify-center bg-gray-50 dark:bg-gray-700/30">
+                            <img src="images/mohamedhasan1.png" alt="Mohamed Hassan Mostafa" class="w-full h-full object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-500">
+                        </div>
+                        <h3 class="font-bold text-xl lg:text-2xl font-['Poppins'] text-gray-800 dark:text-gray-100 leading-tight transition-colors mb-2">Mohamed<br>Hassan Mostafa</h3>
+                        
+                        <p class="text-sm lg:text-base text-[#E22C2C] dark:text-red-400 font-bold mt-auto pt-3 lg:mt-auto lg:pt-4 border-t border-gray-100 dark:border-gray-700 transition-colors flex items-center"><i class="fa-solid fa-id-card mr-1.5 lg:mr-2 text-base"></i> 221132</p>
+                    </div>
+                </div>
+
+                <div class="team-card bg-white dark:bg-gray-800 p-6 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] shadow-xl hover:shadow-2xl hover:shadow-red-500/10 dark:hover:shadow-red-500/20 border border-gray-100 dark:border-gray-700 Transition-colors relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-red-50 dark:bg-red-900/30 rounded-full blur-3xl opacity-60 group-hover:scale-150 transition-transform duration-700"></div>
+                    <div class="relative z-10 flex flex-col h-full">
+                        <div class="w-32 h-44 lg:w-40 lg:h-56 mb-5 lg:mb-6 rounded-3xl overflow-hidden border-[3px] lg:border-4 border-[#E22C2C]/40 shadow-inner transition-colors flex items-center justify-center bg-gray-50 dark:bg-gray-700/30">
+                            <img src="images/mohamedhosam.png" alt="Mohamed Hossam Abdelsalam" class="w-full h-full object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-500">
+                        </div>
+                        <h3 class="font-bold text-xl lg:text-2xl font-['Poppins'] text-gray-800 dark:text-gray-100 leading-tight transition-colors mb-2">Mohamed<br>Hossam Abdelsalam</h3>
+                        
+                        <p class="text-sm lg:text-base text-[#E22C2C] dark:text-red-400 font-bold mt-auto pt-3 lg:mt-auto lg:pt-4 border-t border-gray-100 dark:border-gray-700 transition-colors flex items-center"><i class="fa-solid fa-id-card mr-1.5 lg:mr-2 text-base"></i> 221206</p>
+                    </div>
+                </div>
+
+                <div class="team-card bg-white dark:bg-gray-800 p-6 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] shadow-xl hover:shadow-2xl hover:shadow-red-500/10 dark:hover:shadow-red-500/20 border border-gray-100 dark:border-gray-700 Transition-colors relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-red-50 dark:bg-red-900/30 rounded-full blur-3xl opacity-60 group-hover:scale-150 transition-transform duration-700"></div>
+                    <div class="relative z-10 flex flex-col h-full">
+                        <div class="w-32 h-44 lg:w-40 lg:h-56 mb-5 lg:mb-6 rounded-3xl overflow-hidden border-[3px] lg:border-4 border-[#E22C2C]/40 shadow-inner transition-colors flex items-center justify-center bg-gray-50 dark:bg-gray-700/30">
+                            <img src="images/ziad.png" alt="Ziad Reda Fahmy" class="w-full h-full object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-500">
+                        </div>
+                        <h3 class="font-bold text-xl lg:text-2xl font-['Poppins'] text-gray-800 dark:text-gray-100 leading-tight transition-colors mb-2">Ziad Reda<br>Fahmy</h3>
+                        
+                        <p class="text-sm lg:text-base text-[#E22C2C] dark:text-red-400 font-bold mt-auto pt-3 lg:mt-auto lg:pt-4 border-t border-gray-100 dark:border-gray-700 transition-colors flex items-center"><i class="fa-solid fa-id-card mr-1.5 lg:mr-2 text-base"></i> 221076</p>
+                    </div>
+                </div>
+
+                <div class="team-card bg-white dark:bg-gray-800 p-6 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] shadow-xl hover:shadow-2xl hover:shadow-red-500/10 dark:hover:shadow-red-500/20 border border-gray-100 dark:border-gray-700 Transition-colors relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-red-50 dark:bg-red-900/30 rounded-full blur-3xl opacity-60 group-hover:scale-150 transition-transform duration-700"></div>
+                    <div class="relative z-10 flex flex-col h-full">
+                        <div class="w-32 h-44 lg:w-40 lg:h-56 mb-5 lg:mb-6 rounded-3xl overflow-hidden border-[3px] lg:border-4 border-[#E22C2C]/40 shadow-inner transition-colors flex items-center justify-center bg-gray-50 dark:bg-gray-700/30">
+                            <img src="images/ahmed.png" alt="Ahmed Bahaa El din" class="w-full h-full object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-500">
+                        </div>
+                        <h3 class="font-bold text-xl lg:text-2xl font-['Poppins'] text-gray-800 dark:text-gray-100 leading-tight transition-colors mb-2">Ahmed Bahaa<br>El din</h3>
+                        
+                        <p class="text-sm lg:text-base text-[#E22C2C] dark:text-red-400 font-bold mt-auto pt-3 lg:mt-auto lg:pt-4 border-t border-gray-100 dark:border-gray-700 transition-colors flex items-center"><i class="fa-solid fa-id-card mr-1.5 lg:mr-2 text-base"></i> 221399</p>
+                    </div>
+                </div>
+
+                <div class="team-card bg-white dark:bg-gray-800 p-6 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] shadow-xl hover:shadow-2xl hover:shadow-red-500/10 dark:hover:shadow-red-500/20 border border-gray-100 dark:border-gray-700 Transition-colors relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-red-50 dark:bg-red-900/30 rounded-full blur-3xl opacity-60 group-hover:scale-150 transition-transform duration-700"></div>
+                    <div class="relative z-10 flex flex-col h-full">
+                        <div class="w-32 h-44 lg:w-40 lg:h-56 mb-5 lg:mb-6 rounded-3xl overflow-hidden border-[3px] lg:border-4 border-[#E22C2C]/40 shadow-inner transition-colors flex items-center justify-center bg-gray-50 dark:bg-gray-700/30">
+                            <img src="images/mohamedgamal.jpg" alt="Mohamed Gamal Hamed" class="w-full h-full object-cover object-center scale-100 group-hover:scale-105 transition-transform duration-500">
+                        </div>
+                        <h3 class="font-bold text-xl lg:text-2xl font-['Poppins'] text-gray-800 dark:text-gray-100 leading-tight transition-colors mb-2">Mohamed Gamal<br>Hamed</h3>
+                        
+                        <p class="text-sm lg:text-base text-[#E22C2C] dark:text-red-400 font-bold mt-auto pt-3 lg:mt-auto lg:pt-4 border-t border-gray-100 dark:border-gray-700 transition-colors flex items-center"><i class="fa-solid fa-id-card mr-1.5 lg:mr-2 text-base"></i> 221324</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-10 px-6 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 transition-colors text-center relative z-10">
+        <p class="text-sm text-gray-500 dark:text-gray-600 font-['Poppins']">&copy; 2024 Smart Health Monitor Team. All rights reserved.</p>
+    </footer>
+
+    <script>
+        var themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+        var themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            themeToggleLightIcon.classList.remove('hidden');
+        } else {
+            themeToggleDarkIcon.classList.remove('hidden');
+        }
+
+        var themeToggleBtn = document.getElementById('theme-toggle');
+
+        themeToggleBtn.addEventListener('click', function() {
+            themeToggleDarkIcon.classList.toggle('hidden');
+            themeToggleLightIcon.classList.toggle('hidden');
+
+            if (localStorage.getItem('color-theme')) {
+                if (localStorage.getItem('color-theme') === 'light') {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                }
+            } else {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
